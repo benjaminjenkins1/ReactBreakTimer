@@ -1,0 +1,140 @@
+class Clock extends React.Component {
+	constructor(){
+		super();
+		this.state={
+			session: 1,
+			break: 20,
+			time: null,
+			timeF: 'Start',
+			started: false,
+			issession: 'Session',
+		}
+	}
+	renderButton(i,which){
+		return(<Button value={i} onClick={()=>this.handleClick(i,which)}/>);
+	}
+	renderSession(){
+		return(<Session value={this.state.session}/>);
+	}
+	renderBreak(){
+		return(<Break value={this.state.break}/>);
+	}
+	renderTimer(){
+		return(<Timer value={this.state.timeF} onClick={()=>this.handleStart()}/>);
+	}
+	handleClick(i,which){
+		if(i=='-'){
+			if(which=='session'){
+				if(this.state.session > 1){
+					this.setState({session: this.state.session - 1});
+				}
+			} 
+			else{
+				if(this.state.break > 1){
+					this.setState({break: this.state.break - 1});
+				}
+			}
+		}
+		else if(i=='+'){
+			if(which=='session'){
+				this.setState({session: this.state.session + 1});
+			} 
+			else{
+				this.setState({break: this.state.break + 1});
+			}
+		}
+	}
+	handleStart(){
+		if(this.state.started==false){
+			this.setState({
+				time: this.state.session*60, 
+				started: true, 
+				timeF: this.formatTime(this.state.session*60), 
+				issession: 'Session',
+			})
+			this.timerID = setInterval(()=>this.tick(),1000);
+		}
+	}
+	tick(){
+		if(this.state.time == 0){
+			this.setState((prevState)=>{
+				return {
+					time: prevState.break*60, 
+					timeF: this.formatTime(prevState.break*60),
+					issession: 'Break',
+				}
+			});
+		}
+		else{
+			this.setState((prevState)=>{
+				return {
+					time: prevState.time -1,
+					timeF: this.formatTime(prevState.time -1),
+				}
+			});
+		}
+	}
+	formatTime(time){
+		var hours = parseInt((time/(60*60))%24);
+		var minutes = parseInt((time/(60))%60);
+		var seconds = parseInt(time%60);
+   	hours = (hours < 10) ? "0" + hours : hours;
+		hours = (hours < 1) ? '' : hours;
+   	minutes = (minutes < 10) ? "0" + minutes : minutes;
+   	seconds = (seconds < 10) ? "0" + seconds : seconds;
+		return this.state.issession +"\n"+  hours+minutes+":"+seconds;
+	}
+	render(){
+		return(
+			<div>
+				<div>
+					{this.renderButton('-','session')}
+					{this.renderSession()}
+					{this.renderButton('+','session')}
+				</div>
+				<div>
+					{this.renderButton('-','break')}
+					{this.renderBreak()}
+					{this.renderButton('+','break')}
+				</div>
+				{this.renderTimer()}
+			</div>
+		);
+	}
+}
+
+function Session(props){
+	return(
+		<div className="session">
+			Session: {props.value}
+		</div>
+	);
+}
+
+function Break(props){
+	return(
+		<div className="break">
+			Break: {props.value}
+		</div>
+	);
+}
+
+function Button(props){
+	return(
+		<button className="btn btn-secondary" onClick={()=>props.onClick()}>{props.value}</button>
+	);
+}
+
+function Timer(props){
+	return(
+		<div className="timer" onClick={()=>props.onClick()}>
+			<div className='timerText'>{props.value}</div>
+		</div>
+	);
+}
+
+function tick(init){
+	
+}
+
+ReactDOM.render(<Clock/>,document.getElementById('clock-container'));
