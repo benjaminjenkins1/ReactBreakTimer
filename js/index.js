@@ -15,7 +15,7 @@ var Clock = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, _React$Component.call(this));
 
 		_this.state = {
-			session: 1,
+			session: 40,
 			break: 20,
 			time: null,
 			timeF: 'Start',
